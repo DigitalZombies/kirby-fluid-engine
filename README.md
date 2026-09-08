@@ -2,6 +2,8 @@
 
 Integrates the [Fluid template engine](https://github.com/TYPO3/Fluid) into [Kirby CMS](https://getkirby.com).
 
+:warning: This project is under active development and some APIs might change until the first stable version.
+
 The plugin replaces Kirby's `template` component, so `site/templates/*.html` files are rendered
 by Fluid while everything else about Kirby stays the same. Variable paths resolve against Kirby's
 API (`{page.title}`, `{page.children.listed}`), snippets become Fluid partials, and a `k:`
@@ -25,8 +27,9 @@ composer require digital-zombies/kirby-fluid-engine
 Composer places the plugin in `site/plugins/kirby-fluid-engine`, installs Fluid into the site's
 `vendor` directory and registers both in the site's autoloader.
 
-## Options
+## Usage
 
+### Options
 All options live under the `digital-zombies.kirby-fluid-engine` key in `site/config/config.php`:
 
 ```php
@@ -42,7 +45,73 @@ return [
 ];
 ```
 
-### `templates`, `layouts`, `partials`
+### Writing Templates
+
+Fluid templates are plain `.html` files. Kirby content objects stay first-class: `{page.title}`,
+`{site.children.listed}` and `{page.cover.alt}` resolve straight through Kirby's API.
+
+For example your page template would look something like this:
+
+```html
+<!-- site/templates/home.html -->
+<f:layout name="Base"/>
+
+<f:section name="Main">
+  <h1>{page.title}</h1>
+
+  <f:for each="{site.children.listed}" as="item">
+    <a href="{item.url}">{item.title}</a>
+  </f:for>
+</f:section>
+```
+
+With a Base Layout define like this:
+
+```html
+<!-- site/layouts/Base.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>{site.title} | {page.title}</title>
+  <k:css href="{0: 'assets/css/prism.css', 1: 'assets/css/lightbox.css', 2: 'assets/css/index.css', 3: '@auto'}"/>
+  <k:js src="{0: 'assets/js/prism.js', 1: 'assets/js/lightbox.js', 2: 'assets/js/index.js', 3: '@auto'}"/>
+  <link rel="shortcut icon" type="image/x-icon" href="{k:link(to: 'favicon.ico')}">
+</head>
+<body>
+  <!-- header content -->
+  <main class="main">
+    <f:render section="Main" arguments="{_all}"/>
+  </main>
+  <!-- footer content -->
+</body>
+</html>
+```
+
+### Fluid ViewHelpers
+
+We only ship ViewHelpers that are part of the core Fluid library,
+so you won't get all ViewHelpers that are available in TYPO3 at the moment.
+To see which ViewHelpers are available, take a look at the [Fluid ViewHelper documentation](https://docs.typo3.org/other/typo3fluid/fluid/main/en-us/ViewHelpers/Fluid/Index.html).
+
+We're considering porting more commonly used ViewHelpers in the future. But
+
+### Kirby ViewHelpers
+
+A variable path can only call Kirby methods that take no arguments. For everything else — queries
+like `crop(400, 500)`, `css()` and `js()` tags, inline SVGs, PHP snippets — the plugin ships a `k:`
+ViewHelper namespace:
+
+```html
+<k:svg src="assets/icons/discord.svg"/>
+{k:query(q: 'page.cover.crop(1200, 600).url')}
+<k:link to="{page.parent}" params="{tag: tag}">{tag}</k:link>
+```
+
+See [docs/view-helpers.md](docs/view-helpers.md) for every helper, its arguments and examples.
+
+### Configure Root Paths
 
 Additional absolute root paths, appended to the defaults. Non-existing directories are ignored.
 
@@ -124,8 +193,5 @@ plugins that a template has no business calling:
 
 ## License
 
-MIT
+This plugin is licensed under the [MIT License](LICENSE.md).
 
-## Credits
-
-- Roland Kádár

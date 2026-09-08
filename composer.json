@@ -26,5 +26,8 @@
 	},
 	"require-dev": {
 		"getkirby/cms": "^5.5"
-	}
+	},
+    "archive": {
+        "exclude": ["/docs"]
+    }
 }
