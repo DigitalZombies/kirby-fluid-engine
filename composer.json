@@ -1,0 +1,30 @@
+{
+	"name": "digital-zombies/kirby-fluid-engine",
+	"description": "Integrates the Fluid template engine into Kirby CMS.",
+	"license": "MIT",
+	"type": "kirby-plugin",
+	"version": "0.1.0",
+	"authors": [
+		{
+			"name": "Roland Kádár",
+			"email": "rcx.devs@gmail.com"
+		}
+	],
+	"require": {
+		"getkirby/composer-installer": "^1.1",
+		"typo3fluid/fluid": "^5.3"
+	},
+	"config": {
+		"allow-plugins": {
+			"getkirby/composer-installer": true
+		}
+	},
+	"autoload": {
+		"psr-4": {
+			"DigitalZombies\\KirbyFluidEngine\\": "src/"
+		}
+	},
+	"require-dev": {
+		"getkirby/cms": "^5.5"
+	}
+}
