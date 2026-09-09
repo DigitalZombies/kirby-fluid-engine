@@ -9,3 +9,6 @@
 
 # dev kirby installation
 /kirby
+
+# Tools
+.headroom*

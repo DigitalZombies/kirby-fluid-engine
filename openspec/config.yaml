@@ -1,0 +1,15 @@
+schema: spec-driven
+
+context: |
+  Tech stack: PHP, Kirby CMS, Typo3 Fluid
+  We use conventional commits
+  This is a plugin for Kirby CMS that allows you to use Typo3 Fluid templates in your Kirby project.
+
+rules:
+  proposal:
+    - Make sure proposals are using what is available by the current version of our dependencies
+    - Keep proposals under 500 words
+    - Always include a "Non-goals" section
+  tasks:
+    - Break tasks into chunks of max 2 hours
+
