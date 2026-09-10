@@ -35,12 +35,13 @@ All options live under the `digital-zombies.kirby-fluid-engine` key in `site/con
 ```php
 return [
     'digital-zombies.kirby-fluid-engine' => [
-        'templates' => [],
-        'layouts'   => [],
-        'partials'  => [],
-        'cache'     => null,
-        'usephp'    => true,
-        'deny'      => [],
+        'templates'   => [],
+        'layouts'     => [],
+        'partials'    => [],
+        'cache'       => null,
+        'usephp'      => true,
+        'deny'        => [],
+        'viewHelpers' => [],
     ],
 ];
 ```
@@ -190,6 +191,34 @@ plugins that a template has no business calling:
     'deny' => ['sendInvoice', 'syncStock'],
 ],
 ```
+
+### `viewHelpers`
+
+Your own ViewHelper namespaces, as a map of identifier to PHP namespace — the equivalent of
+TYPO3's global namespace registry:
+
+```php
+'digital-zombies.kirby-fluid-engine' => [
+    'viewHelpers' => [
+        'my'  => 'Acme\\Site\\ViewHelpers',
+        'sw*' => null,
+    ],
+],
+```
+
+`<my:teaser/>` then resolves to `Acme\Site\ViewHelpers\TeaserViewHelper`, and
+`{my:format.currency(value: 12)}` to `Acme\Site\ViewHelpers\Format\CurrencyViewHelper`. A value
+may also be an array of PHP namespaces, of which the last one wins for a duplicate ViewHelper
+name, or `null` to declare that the identifier is not Fluid at all so matching tags are output
+verbatim.
+
+`k` and `f` may be registered too, which extends rather than replaces them: your ViewHelper wins
+over the shipped one of the same name. A plugin can register its own namespaces through a `fluid`
+extension key, and a template can declare one for itself with `{namespace my=Acme\Site\ViewHelpers}`.
+
+Loading the classes is up to you — Kirby's `load` option or a Composer autoloader. See
+[docs/view-helpers.md](docs/view-helpers.md#custom-viewhelpers) for writing a ViewHelper,
+autoloading, precedence and the plugin extension key.
 
 ## License
 

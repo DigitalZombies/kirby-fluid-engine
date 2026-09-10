@@ -41,12 +41,15 @@ final class ViewFactory
 
     protected static function createContext(App $kirby): KirbyRenderingContext
     {
-        $context = new KirbyRenderingContext();
+        $context    = new KirbyRenderingContext();
+        $namespaces = ViewHelperNamespaces::resolve($kirby);
 
         // Kirby has no controller/action concept; an empty controller name
         // skips the `templates/<Controller>/<action>.html` lookup entirely
         $context->setControllerName('');
         $context->setControllerAction('');
+
+        $context->setTemplatePaths(new KirbyTemplatePaths(ViewHelperNamespaces::hash($namespaces)));
 
         $paths = $context->getTemplatePaths();
         $paths->setTemplateRootPaths(static::roots($kirby, 'templates'));
@@ -57,12 +60,9 @@ final class ViewFactory
             $context->setCache($cache);
         }
 
-        // added last, so these shadow the built-in ViewHelpers of the same name
-        $resolver = $context->getViewHelperResolver();
-        $resolver->addNamespace('f', 'DigitalZombies\\KirbyFluidEngine\\ViewHelpers');
-        $resolver->addNamespace('f', 'DigitalZombies\\KirbyFluidEngine\\ViewHelpers\\Kirby');
-        $resolver->addNamespace('k', 'DigitalZombies\\KirbyFluidEngine\\ViewHelpers');
-        $resolver->addNamespace('k', 'DigitalZombies\\KirbyFluidEngine\\ViewHelpers\\Kirby');
+        // replaces Fluid's default `f` namespace, which ViewHelperNamespaces
+        // re-declares as the first entry of the resolved map
+        $context->getViewHelperResolver()->setNamespaces($namespaces);
 
         $context->setAttribute(App::class, $kirby);
         $context->setVariableProvider(new KirbyVariableProvider());
